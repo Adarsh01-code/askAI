@@ -17,7 +17,7 @@ export default function Home() {
         Chat with your <span className="text-blue-600">documents</span> in seconds.
       </h1>
       <p className="mt-5 max-w-prose text-zinc-700 sm:text-lg">
-        Ask-AI is now online and will help you interact with you PDF files. Simply upload your file and see the magic!
+        askAI is now online and will help you interact with you PDF files. Simply upload your file and see the magic!
       </p>
 
       
