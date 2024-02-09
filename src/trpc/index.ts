@@ -39,9 +39,9 @@ export const appRouter = router({
         const {userId} = ctx
 
    
-        return await db.user.findMany({
+        return await db.file.findMany({
             where: {
-                id:userId
+                userId,
             },
         })
         

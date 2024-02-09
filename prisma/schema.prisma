@@ -12,7 +12,7 @@ datasource db {
 
 model User {
   id String @id @unique
-  email String? @unique
+  email String @unique
 
   File    File[]
   Message Message[]
@@ -32,7 +32,7 @@ enum UploadStatus {
 
 model File {
   id   String @id @default(cuid())
-  name String?
+  name String
 
   uploadStatus UploadStatus @default(PENDING)
 
@@ -40,10 +40,10 @@ model File {
   key      String
   messages Message[]
 
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
-  User      User?    @relation(fields: [userId], references: [id])
-  userId    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User    @relation(fields: [userId], references: [id])
+  userId    String
 }
 
 model Message {
