@@ -9,16 +9,13 @@ export const appRouter = router({
         const {getUser} = getKindeServerSession()
         const user = await getUser()
 
-        if(!user?.id || !user.email)
+        if(!user?.id || !user?.email) throw new TRPCError({code: 'UNAUTHORIZED'})
         
-        {
-            throw new TRPCError({code: 'UNAUTHORIZED'})
-        }
 
         //check if user is in the database
         const dbUser = await db.user.findFirst({
             where: {
-                id: user?.id
+                id: user.id
                 
             }
         })
@@ -41,13 +38,7 @@ export const appRouter = router({
     getUserFiles: privateProcedure.query( async ({ctx})=>{
         const {userId} = ctx
 
-    //     return await db.file.findMany({
-    //         where: {
-    //             userId
-    //         },
-    //     })
-        
-    // })
+   
         return await db.user.findMany({
             where: {
                 id:userId

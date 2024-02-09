@@ -1,5 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 
 generator client {
   provider = "prisma-client-js"
@@ -13,7 +12,7 @@ datasource db {
 
 model User {
   id String @id @unique
-  email String @unique
+  email String? @unique
 
   File    File[]
   Message Message[]
@@ -33,7 +32,7 @@ enum UploadStatus {
 
 model File {
   id   String @id @default(cuid())
-  name String
+  name String?
 
   uploadStatus UploadStatus @default(PENDING)
 
@@ -41,15 +40,15 @@ model File {
   key      String
   messages Message[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
   User      User?    @relation(fields: [userId], references: [id])
   userId    String?
 }
 
 model Message {
   id   String @id @default(cuid())
-  text String @db.Text()
+  text String? @db.Text()
 
   isUserMessage Boolean
 

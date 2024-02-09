@@ -23,11 +23,11 @@ const Page =  () => {
             }
         },
         
-        // onError : (err: TRPCClientError<any>) => {
-        //     if(err.data?.code === "UNAUTHORIZED") {
-        //         router.push('/sign-in')
-        //     }
-        // },
+        onError : (err) => {
+            if(err.data?.code === "UNAUTHORIZED") {
+                router.push('/sign-in')
+            }
+        },
 
         retry : true,
         retryDelay : 1000
