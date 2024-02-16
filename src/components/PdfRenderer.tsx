@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronDown, ChevronUp, Divide, Loader, Loader2 } from 'lucide-react'
+import { ChevronDown, ChevronUp, Divide, Loader, Loader2, Search } from 'lucide-react'
 import {Document, Page, pdfjs} from 'react-pdf'
 
 import 'react-pdf/dist/Page/AnnotationLayer.css'
@@ -13,7 +13,12 @@ import { Input } from './ui/input'
 import { useState } from 'react'
 
 import {useForm} from 'react-hook-form'
+import { z } from 'zod'
+import {zodResolver} from '@hookform/resolvers/zod'
+import { cn } from '@/lib/utils'
+import { DropdownMenu,DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
 
+ 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`
 
 
@@ -28,9 +33,37 @@ const PdfRenderer = ({url}:PdfRendererProps) => {
 
     const [numPages, setNumPages] = useState<number>();
     const [currPage, setCurrPage] = useState<number>(1);
+    const [scale, setScale] = useState<number>(1);
+
+    const CustomPageValidator =z.object({
+        page: z.string().refine((num)=>Number(num)>0 && Number(num)>=numPages!)
+    })
+
+    type TCustomPageValidator = z.infer<typeof CustomPageValidator>
 
 
-    const {} = useForm()
+    const {
+        register, 
+        handleSubmit, 
+        formState: {errors},
+        setValue
+    } = useForm<TCustomPageValidator>({
+        defaultValues: {
+            page:'1'
+        },
+        resolver: zodResolver(CustomPageValidator)
+    })
+
+    const handlePageSubmit = ({
+        page,
+    }: TCustomPageValidator) => {
+        setCurrPage(Number(page))
+        setValue('page', String(page))
+
+     
+    }
+
+
 return(
     <div className="w-full bg-white rounded-md shadow flex flex-col items-center">
         <div className="h-14 w-full border-b border-zinc-200 flex items-center justify-between px-2">
@@ -45,7 +78,15 @@ return(
                 </Button>
 
                 <div className='flex items-center gap-1.5'>
-                    <Input className='w-12 h-6 bg-gray-100 border-none'/>
+                    <Input 
+                    {...register('page')} 
+                    onKeyDown={(e)=> {
+                        if(e.key === 'Enter') {
+                            handleSubmit(handlePageSubmit)
+                        }
+                    }}
+                    className={cn('w-12 h-6 bg-gray-100 border-none', errors.page && 'focus-visible:ring-red-500')}
+                    />
                     <p className='text-zinc-700 text-sm space-x-1'>
                         <span>/</span>
                         <span>{numPages ?? <Loader2 className=' h-2 w-2 animate-spin' />}</span>
@@ -61,6 +102,21 @@ return(
                     <ChevronUp className='h-4 w-4' />
                 </Button>
             </div>    
+
+            <div className='space-x-2'>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button className='gap-1.5' variant='ghost' aria-label='zoom' >
+                            <Search className='h-4 w-4' />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem>
+                            100%
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
         </div>
         
         <div className="flex-1 w-full max-h-screen">
