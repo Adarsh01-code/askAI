@@ -6,7 +6,7 @@ import {PDFLoader} from 'langchain/document_loaders/fs/pdf'
 import {OpenAIEmbeddings} from '@langchain/openai'
 
 
-import {getPineconeClient } from "@/lib/pinecone";
+import { pinecone } from "@/lib/pinecone";
 
 import {PineconeStore} from '@langchain/pinecone'
  
@@ -34,6 +34,7 @@ export const ourFileRouter = {
 
       try {
         const response = await fetch(file.url)
+       
         const blob = await response.blob()
 
         const loader = new PDFLoader(blob)
@@ -42,9 +43,12 @@ export const ourFileRouter = {
         const pageAmt = pageLevelDocs.length
 
         //vectorize and index entire document
-        const pinecone =await getPineconeClient()
 
-        const pinecodeIndex = pinecone.Index('ask-ai')
+
+        // const pinecone =await getPineconeClient()
+
+        const pineconeIndex = pinecone.Index('ask-ai')
+
         const embeddings = new OpenAIEmbeddings({
           openAIApiKey: process.env.OPENAI_API_KEY,
         })
@@ -53,8 +57,7 @@ export const ourFileRouter = {
           pageLevelDocs,
           embeddings,
           {
-            
-            pinecodeIndex,
+            pineconeIndex,
             namespace: createdFile.id
           }
         )
@@ -71,7 +74,7 @@ export const ourFileRouter = {
 
         await db.file.update({
           data : {
-            uploadStatus: "PROCESSING"
+            uploadStatus: "FAILED"
           },
           where : {
             id: createdFile.id
