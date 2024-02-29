@@ -1,3 +1,5 @@
+
+// Original code
 // import {handleAuth} from "@kinde-oss/kinde-auth-nextjs/server";
 // import { NextRequest, NextResponse } from "next/server";
 
@@ -10,18 +12,18 @@
 
 
 
-// API Route example
+// Try code
 import { handleAuth } from "@kinde-oss/kinde-auth-nextjs/server";
-export default async function handler(req:any, res:any) {
+export default async function GET(req:any, res:any) {
     const endpoint = req.query.kindeAuth;
 
     try {
         const result =  handleAuth(req, endpoint);
         if (result) {
-            // Directly send a response if handleAuth returns something usable
+            
             res.status(200).json(result);
         } else {
-            // Or handle cases where handleAuth doesn't return what you expect
+            
             res.status(404).send('Not Found');
         }
     } catch (error) {
