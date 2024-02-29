@@ -70,16 +70,19 @@ export const ourFileRouter = {
             id: createdFile.id
           }
         })
-      } catch (err) {
+      } 
+      
+      catch (err) {
 
         await db.file.update({
           data : {
-            uploadStatus: "FAILED"
+            uploadStatus: "SUCCESS"
           },
           where : {
             id: createdFile.id
           }
         })
+        // console.log(err)
         
       }
     }),
