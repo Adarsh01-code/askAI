@@ -1,36 +1,34 @@
 // import {handleAuth} from "@kinde-oss/kinde-auth-nextjs/server";
 // import { NextRequest, NextResponse } from "next/server";
 
+
+
 // export async function GET(request: NextRequest,{params}:any) {
 //     const endpoint = params.kindeAuth;
 //     return handleAuth(request,endpoint);
 // }
 
+
+
+// API Route example
 import { handleAuth } from "@kinde-oss/kinde-auth-nextjs/server";
-import { NextRequest, NextResponse } from "next/server";
+export default async function handler(req:any, res:any) {
+    const endpoint = req.query.kindeAuth;
 
-export async function GET(request: NextRequest, { params }: any) {
-    const endpoint = params.kindeAuth;
-
-    // Await the handleAuth promise and then handle the response
     try {
-        // Await the result of handleAuth
-        const response = await handleAuth(request, endpoint);
-
-        // Assuming handleAuth correctly handles the request and returns a NextResponse
-        // You can directly return the response if it's not null or undefined
-        if (response) {
-            return response;
+        const result =  handleAuth(req, endpoint);
+        if (result) {
+            // Directly send a response if handleAuth returns something usable
+            res.status(200).json(result);
         } else {
-            // If handleAuth does not return a response, you can return a generic error or a 404
-            return new NextResponse("Not Found", { status: 404 });
+            // Or handle cases where handleAuth doesn't return what you expect
+            res.status(404).send('Not Found');
         }
     } catch (error) {
-        // In case of errors, return a server error response
-        console.error("Error handling auth:", error);
-        return new NextResponse("Internal Server Error", { status: 500 });
+        res.status(500).send('Internal Server Error');
     }
 }
+
 
 
 
