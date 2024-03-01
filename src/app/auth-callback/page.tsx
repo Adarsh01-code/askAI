@@ -57,7 +57,7 @@
 "use client"
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { trpc } from '../_trpc/client';
 import { Loader2 } from 'lucide-react';
 import { TRPCClientError } from '@trpc/client';
