@@ -29,7 +29,7 @@ const Page = async () => {
       quota: 10,
       features: [
         {
-          text: '5 pages per PDF',
+          text: '8 pages per PDF',
           footnote:
             'The maximum amount of pages per PDF-file.',
         },

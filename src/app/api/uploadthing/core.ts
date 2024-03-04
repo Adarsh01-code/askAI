@@ -9,6 +9,8 @@ import {OpenAIEmbeddings} from '@langchain/openai'
 import { pinecone } from "@/lib/pinecone";
 
 import {PineconeStore} from '@langchain/pinecone'
+import { getUserSubscriptionPlan } from "@/lib/stripe";
+import { PLANS } from "@/config/stripe";
  
 const f = createUploadthing();
  
@@ -19,7 +21,9 @@ export const ourFileRouter = {
         const user =await getUser()
 
         if(!user || !user.id) throw new Error("Unauthorized")
-      return {userId : user.id};
+
+        const subscriptionPlan = await getUserSubscriptionPlan()
+      return {subscriptionPlan ,userId : user.id};
     })
     .onUploadComplete(async ({ metadata, file }) => {
       const createdFile = await db.file.create({
@@ -42,6 +46,23 @@ export const ourFileRouter = {
         const pageLevelDocs = await loader.load()
         const pageAmt = pageLevelDocs.length
 
+        const {subscriptionPlan} = metadata
+        const {isSubscribed} = subscriptionPlan
+
+        const isProExceeded = pageAmt > PLANS.find((plan)=> plan.name === "Pro")!.pagesPerPdf 
+        const isFreeExceeded = pageAmt > PLANS.find((plan)=> plan.name === "Free")!.pagesPerPdf 
+
+        if((isSubscribed && isProExceeded) || (!isSubscribed && isFreeExceeded))
+        {
+          await db.file.update({
+            data: {
+              uploadStatus: 'FAILED',
+            },
+            where: {
+              id:createdFile.id,
+            },
+          })
+        }
         //vectorize and index entire document
 
 
